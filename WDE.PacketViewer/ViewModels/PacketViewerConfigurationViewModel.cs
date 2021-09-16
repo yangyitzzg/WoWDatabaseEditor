@@ -5,6 +5,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using WDE.Common;
 using WDE.Common.Types;
+using WDE.Common.Utils;
 using WDE.Module.Attributes;
 using WDE.MVVM;
 using WDE.MVVM.Observable;
@@ -20,11 +21,18 @@ namespace WDE.PacketViewer.ViewModels
         private bool alwaysSplitUpdates;
         private bool wrapLines;
         private bool isModified;
+        private bool alwaysHidePlayerMovePackets;
 
         public bool AlwaysSplitUpdates
         {
             get => alwaysSplitUpdates;
             set => SetProperty(ref alwaysSplitUpdates, value);
+        }
+
+        public bool AlwaysHidePlayerMovePackets
+        {
+            get => alwaysHidePlayerMovePackets;
+            set => SetProperty(ref alwaysHidePlayerMovePackets, value);
         }
 
         public bool WrapLines
@@ -37,11 +45,12 @@ namespace WDE.PacketViewer.ViewModels
 
         public ObservableCollection<ParserSettingViewModel> ParserSettings { get; } = new();
 
-        public PacketViewerConfigurationViewModel(IPacketViewerSettings settings, INativeTextDocument nativeText)
+        public PacketViewerConfigurationViewModel(IPacketViewerSettings settings, INativeTextDocument nativeText, IntegrationTests.RelatedPacketsTester tester)
         {
             this.settings = settings;
             wrapLines = settings.Settings.WrapLines;
             alwaysSplitUpdates = settings.Settings.AlwaysSplitUpdates;
+            alwaysHidePlayerMovePackets = settings.Settings.AlwaysHidePlayerMovePackets;
             DefaultFilterText = nativeText;
             DefaultFilterText.FromString(settings.Settings.DefaultFilter ?? "");
 
@@ -68,6 +77,8 @@ namespace WDE.PacketViewer.ViewModels
                 AutoDispose(setting.ToObservable(t => t.StringValue).SubscribeAction(_ => IsModified = true));
             }
 
+            RunTestsCommand = new AsyncAutoCommand(tester.TestCase);
+
             Save = new DelegateCommand(() =>
             {
                 var parser = ParserConfiguration.Defaults;
@@ -79,12 +90,14 @@ namespace WDE.PacketViewer.ViewModels
                     AlwaysSplitUpdates = AlwaysSplitUpdates,
                     WrapLines = WrapLines,
                     DefaultFilter = string.IsNullOrEmpty(defaultFilter) ? null : defaultFilter,
+                    AlwaysHidePlayerMovePackets = alwaysHidePlayerMovePackets,
                     Parser = parser
                 };
                 IsModified = false;
             });
             On(() => WrapLines, _ => IsModified = true);
             On(() => AlwaysSplitUpdates, _ => IsModified = true);
+            On(() => AlwaysHidePlayerMovePackets, _ => IsModified = true);
 
             IsModified = false;
         }
@@ -95,6 +108,7 @@ namespace WDE.PacketViewer.ViewModels
             set => SetProperty(ref isModified, value);
         }
 
+        public ICommand RunTestsCommand { get; }
         public ICommand Save { get; }
         public string Name => "Packet viewer";
         public string? ShortDescription =>

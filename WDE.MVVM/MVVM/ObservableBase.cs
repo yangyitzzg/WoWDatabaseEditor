@@ -94,7 +94,7 @@ namespace WDE.MVVM
         {
             AutoDispose(this.ToObservable(property).SubscribeAction(action));
         }
-        
+
         protected bool SetPropertyWithOldValue<T>(ref T storage, T value, [CallerMemberName] string? propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(storage, value)) return false;

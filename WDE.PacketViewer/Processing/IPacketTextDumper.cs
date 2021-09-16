@@ -17,4 +17,9 @@ namespace WDE.PacketViewer.Processing
     {
         T? PreProcess(PacketHolder packet);
     }
+
+    public interface IUnfilteredPacketProcessor
+    {
+        void ProcessUnfiltered(PacketHolder unfiltered);
+    }
 }
