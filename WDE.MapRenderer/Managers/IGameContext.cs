@@ -24,6 +24,7 @@ namespace WDE.MapRenderer.Managers
         RaycastSystem RaycastSystem { get; }
         DbcManager DbcManager { get; }
         LightingManager LightingManager { get; }
+        CreatureManager CreatureManager { get; }
         TimeManager TimeManager { get; }
         ScreenSpaceSelector ScreenSpaceSelector { get; }
         Map CurrentMap { get; }
