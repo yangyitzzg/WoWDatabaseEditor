@@ -137,7 +137,7 @@ namespace WDE.MapRenderer
                 registeredViewModels = moduleManager.ViewModels;
                 registeredViewModels.CollectionChanged += RegisteredViewModelsOnCollectionChanged;
                 
-                Dispatcher.UIThread.Post(() => vm.SelectedMap = vm.Maps.FirstOrDefault(x => x.Id == gameContext.CurrentMap.Id), DispatcherPriority.Background);
+                Dispatcher.UIThread.Post(() => vm.SelectedMap = vm.Maps?.FirstOrDefault(x => x.Id == gameContext.CurrentMap.Id), DispatcherPriority.Background);
                 gameContext.ChangedMap += newMapId =>
                 {
                     Dispatcher.UIThread.Post(() => vm.SelectedMap = vm.Maps.FirstOrDefault(x => x.Id == newMapId), DispatcherPriority.Background);
